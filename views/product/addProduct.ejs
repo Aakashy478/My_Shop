@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Add Product</h2>
+        <form id="productForm" enctype="multipart/form-data">
+            <input type="text" name="name" placeholder="Product Name" required>
+            <input type="number" name="price" placeholder="Price" required>
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Add Product</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('productForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent page refresh
+
+            let formData = new FormData(this); // Capture form data
+
+            try {
+                let response = await fetch('/api/product/addProduct', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                let result = await response.json();
+
+                if (response.ok) {
+                    console.log("Product added successfully!");
+                    alert(result.message || 'Product added successfully!');
+                    window.location.href = '/api/product/viewProducts'; // Redirect to view page
+                } else {
+                    alert(result.message || 'Failed to add product. Try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.\n' + error.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

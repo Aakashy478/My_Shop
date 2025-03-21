@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        <form id="registerForm" method="POST" enctype="multipart/form-data">
+            <input type="text" name="firstName" id="firstName" placeholder="First Name" required>
+            <input type="text" name="lastName" id="lastName" placeholder="Last Name" required>
+            <input type="email" name="email" id="email" placeholder="Email" required>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <input type="file" name="profileImage" id="profileImage">
+            <select name="role" id="role" required>
+                <option value="">Select Role</option>
+                <option value="user">User</option>
+                <option value="merchant">Merchant</option>
+            </select>
+            <button type="submit">Register</button>
+        </form>
+        <div class="links">
+            <a href="/api/user/login">Already have an account? Login</a>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+            $("#registerForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                let formData = new FormData(this); // Capture form data including file upload
+
+  // Debugging: Check if FormData is capturing data
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }                
+                $.ajax({
+                    url: "/api/user/register",
+                    type: "POST",
+                    data: formData,
+                    success: function (response) {
+                        alert(response.message || "Registration successful!");
+                        window.location.href = "/api/user/login"; // Redirect to login page
+                    },
+                    error: function (err) {
+                        console.log("error:- ",error);
+                        alert(err.responseJSON?.message || "Registration failed. Try again.");
+                    }
+                });
+            });
+        });
+</script>
+
+
+</html>

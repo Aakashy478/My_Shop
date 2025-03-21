@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Profile</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            object-fit: cover;
+        }
+
+        .info {
+            margin: 10px 0;
+        }
+
+        .info strong {
+            display: block;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .info span {
+            color: #555;
+        }
+
+        .logout-btn,
+        .home-btn {
+            width: 100%;
+            padding: 10px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .home-btn {
+            background-color: #007bff;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .home-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .edit-profile {
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .edit-profile:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>User Profile</h2>
+        <img class="profile-img" src="<%= user.profileImage %>" alt="Profile Picture">
+
+        <div class="info">
+            <strong>First Name:</strong>
+            <span>
+                <%= user.firstName %>
+            </span>
+        </div>
+
+        <div class="info">
+            <strong>Last Name:</strong>
+            <span>
+                <%= user.lastName %>
+            </span>
+        </div>
+
+        <div class="info">
+            <strong>Email:</strong>
+            <span>
+                <%= user.email %>
+            </span>
+        </div>
+
+        <div class="info">
+            <strong>Role:</strong>
+            <span>
+                <%= user.role %>
+            </span>
+        </div>
+
+        <a class="edit-profile" href="/api/user/updateProfile">Edit Profile</a>
+
+        <form action="/api/user/logout" method="POST">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+
+        <!-- Home Button -->
+        <a href="/home" class="home-btn">Home</a>
+    </div>
+</body>
+
+</html>

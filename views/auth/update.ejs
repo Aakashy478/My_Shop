@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile - My_Shop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            width: 40%;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #1a2533;
+        }
+
+        .form-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 10px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #e68a00;
+        }
+
+        a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #1a2533;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Update Profile</h2>
+
+        <form id="updateProfileForm" enctype="multipart/form-data">
+            <img class="profile-img" src="<%= user.profileImage %>" alt="Profile Picture">
+
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>">
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>">
+            </div>
+
+            <div class="form-group">
+                <label for="password">New Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter new password">
+            </div>
+
+            <div class="form-group">
+                <label for="profileImage">Profile Image:</label>
+                <input type="file" id="profileImage" name="profileImage">
+            </div>
+
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <a href="/api/user/profile">Back to Profile</a>
+    </div>
+
+    <script>
+        document.getElementById("updateProfileForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch("/api/user/updateProfile", {
+                    method: "PUT",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Profile updated successfully!");
+                    window.location.href = '/api/user/profile';
+                } else {
+                    alert(result.message || "Failed to update profile.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            }
+        });
+    </script>
+</body>
+
+</html>
