@@ -63,4 +63,4 @@ const authorize = (roles = []) => {
 };
 
 
-module.exports = { generateToken, passport, authorize };
+module.exports = { generateToken, authorize };

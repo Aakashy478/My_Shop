@@ -205,36 +205,5 @@
         </p>
     </footer>
 </body>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("view-cart-btn").addEventListener("click", function () {
-            fetch("/cart/view", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error ${response.status}: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        alert("Cart loaded successfully!");
-                        console.log(data); // You can process the cart data here
-                    } else {
-                        alert("Failed to load cart. Please try again.");
-                    }
-                })
-                .catch(error => {
-                    alert(`An error occurred: ${error.message}`);
-                    console.error(error);
-                });
-        });
-    });
-</script>
-
 
 </html>

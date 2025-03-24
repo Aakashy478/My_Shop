@@ -3,21 +3,20 @@ const Product = require('../models/productModel');
 
 const addCart = async (req, res) => {
     try {
-        console.log("inside add to cart");
-
+        
         const productId = req.body.productId;
         const userId = req.user.id;
-
+        
         // Check if product exists
         const product = await Product.findOne({ _id: productId });
-
+        
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
-
+        
         // Get cart using userId
         let cart = await Cart.findOne({ userId });
-
+        
         if (!cart) {
             // Create new cart
             cart = new Cart({
@@ -34,12 +33,11 @@ const addCart = async (req, res) => {
                 cart.items.push({ productId, quantity: 1 });
             }
         }
-
+        
         // Save the cart in database
         await cart.save();
 
-        res.redirect('/api/cart/viewCart');
-
+        res.status(201).json({message: "Cart added successfully!"})
     } catch (error) {
         console.log("Error in add to cart:- ", error.message);
         res.status(500).json({ message: "Something went wrong. Please try again later" })
@@ -76,7 +74,8 @@ const viewCart = async (req, res) => {
             return acc;
         }, [])
 
-        res.render('cart/viewCart', { viewCart })
+        res.render('cart/viewCart', { viewCart });
+        // res.status(201).json({ data: viewCart });
     } catch (error) {
         console.log("Error in fetching cart:- ", error.message);
         res.status(500).json({ message: "Somthing went wrong. Please try again later" })

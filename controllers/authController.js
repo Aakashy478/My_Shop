@@ -45,6 +45,7 @@ const authRegister = async (req, res, next) => {
 const authLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(email,password);
 
         // check user exists
         const user = await User.findOne({ email: encrypt(email), isDeleted: false });
@@ -64,7 +65,6 @@ const authLogin = async (req, res) => {
         // Generate token
         const token = generateToken(user, res);
         req.user = user;
-        console.log("token:- ", token);
 
         res.status(201).json({ message: "Login Successfully!" });
     } catch (error) {

@@ -64,11 +64,10 @@ app.use('/api', routes);
 // 404 Page Not Found
 app.use((req, res, next) => {
     res.status(404).render('404');
-})
+});
 
 // Handle validation Error
 app.use(errorHandler);
-
 
 const port = process.env.PORT || 8081;
 app.listen(port, () => {

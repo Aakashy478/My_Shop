@@ -18,11 +18,18 @@ const productController = require('../controllers/productController');
 // Render Product Management Page (Authenticated Users)
 router.get(
     '/productMenagement',
-    passport.authenticate("jwt", { session: false }), authorize(["merchant"]),
-    (req, res) => {
-        res.render('product/productMenagement');
+    passport.authenticate("jwt", { session: false }),
+    authorize(["merchant"]),
+    async (req, res) => {
+        try {
+            res.render('product/productMenagement');
+        } catch (error) {
+            console.log("Error in productMenagement",error);
+            res.status(500).json({ message: "Something went wrong. Please try again later." });
+        }
     }
 );
+
 
 // Render Add Product Page (Only Merchants)
 router.get(

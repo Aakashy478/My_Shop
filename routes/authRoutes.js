@@ -14,7 +14,9 @@ const authController = require('../controllers/authController');
 const authValidation = require('../validations/auth/registerValidate');
 const loginValidate = require('../validations/auth/loginValidate');
 const updateProfileValidate = require('../validations/auth/updateProfileValidate');
+const forgotPasswordValidate = require('../validations/auth/forgotPassword');
 const User = require('../models/userModel');
+const resetPasswordValidate = require('../validations/auth/resetPassword');
 
 // ===================== GET Methods =====================
 
@@ -48,7 +50,7 @@ router.get('/resetPassword', (req, res) => {
 // ===================== POST Methods =====================
 
 // Register New User
-router.post('/register', upload.single('profileImage'), validate(authValidation), authController.authRegister);
+router.post('/register', validate(authValidation), upload.single('profileImage'),  authController.authRegister);
 
 // Login User
 router.post('/login', validate(loginValidate), authController.authLogin);
@@ -57,16 +59,16 @@ router.post('/login', validate(loginValidate), authController.authLogin);
 router.get('/profile', passport.authenticate("jwt", { session: false }), authController.authProfile);
 
 // Update Profile (Protected)
-router.put('/updateProfile', validate(updateProfileValidate), passport.authenticate("jwt", { session: false }), upload.single("profileImage"), authController.updateProfile);
+router.put('/updateProfile', passport.authenticate("jwt", { session: false }), validate(updateProfileValidate), upload.single("profileImage"), authController.updateProfile);
 
 // Delete User Account
 router.delete('/deleteAuth', authController.isDeleted);
 
 // Forgot Password
-router.post('/forgotPassword', authController.forgot_password);
+router.post('/forgotPassword',validate(forgotPasswordValidate), authController.forgot_password);
 
 // Reset Password
-router.post('/resetPassword', authController.reset_password);
+router.post('/resetPassword', validate(resetPasswordValidate), authController.reset_password);
 
 // Logout User
 router.post('/logout', authController.logout);

@@ -177,21 +177,22 @@
     </style>
 </head>
 
-<body> 
+<body>
     <!-- Navbar -->
     <nav>
         <div class="logo">My_Shop</div>
         <ul class="nav-links">
             <li><a href="/home">Home</a></li>
-            <li><a href="/api/product/productMenagement">Products</a></li>
-            <li><a href="/api/cart/viewCart">viewCart</a></li>
+            <!-- Products link converted to AJAX -->
+            <li><a href="/api/product/productMenagement" id="productsLink">Products</a></li>
+            <!-- View Cart link converted to AJAX -->
+            <li><a href="/api/cart/viewCart" id="viewCartLink">viewCart</a></li>
         </ul>
         <div class="auth-buttons">
             <% if (!user) { %>
                 <a href="/api/user/register">Register</a>
                 <a href="/api/user/login">Login</a>
                 <% } %>
-
                     <% if (user) { %>
                         <div class="profile-circle">
                             <a href="/api/user/profile">
@@ -219,9 +220,8 @@
                     <%= product.name %>
                 </h3>
                 <p>Price: <%= product.price %>/-</p>
-
-                <!-- Add to Cart Form (POST method) -->
-                <form action="/api/cart/addCart" method="POST" enctype="form-data">
+                <!-- Add to Cart Form (AJAX version) -->
+                <form action="/api/cart/addCart" method="POST" class="add-to-cart-form">
                     <input type="hidden" name="productId" value="<%= product._id %>">
                     <button type="submit" class="add-to-cart">Add to Cart</button>
                 </form>
@@ -235,6 +235,100 @@
             <script>document.write(new Date().getFullYear())</script> My_Shop. All rights reserved.
         </p>
     </footer>
+    </div>
 </body>
+<!-- Product Menagement container -->
+<button id="productManagementBtn"> Manage Products</button>
+<div id="productManagementContainer"></div>
+<!-- View Cart container -->
+<button id="viewCartBtn">View Cart</button>
+<div id="cartContainer"></div>
+
+<!-- jQuery and AJAX Script with Simple Validation -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#productManagementLink").on("click", function (event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: "/api/product/productMenagement", // Your protected route
+                type: "GET",
+                dataType: "html",
+                xhrFields: {
+                    withCredentials: true // ✅ Ensures cookies (JWT) are sent
+                },
+                success: function (html) {
+                    console.log("Page Loaded Successfully:", html);
+                    $("#productManagementContainer").html(html);
+                },
+                error: function (err) {
+                    console.log("Error:", err);
+
+                    // Handle authentication and authorization errors
+                    if (err.status === 401) {
+                        alert("Unauthorized! You must log in first.");
+                        window.location.href = '/api/user/login'; // Redirect to login page
+                    } else if (err.status === 403) {
+                        alert(err.responseJSON?.message || "Access Denied! You do not have permission to view this page.");
+                    } else {
+                        alert("Something went wrong. Please try again later.");
+                    }
+                }
+            });
+        });
+    });
+
+    // ----- View Cart Button AJAX -----
+    $(document).ready(function () {
+        $("#viewCartBtn").on("click", function (event) {
+            event.preventDefault();
+            $.ajax({
+                url: "/api/cart/viewCart", // Ensure this matches your backend route
+                type: "GET",
+                dataType: "html", // Expect HTML response
+                success: function (html) {
+                    alert("Carts data loading...");
+                    $("#cartContainer").html(html); // Insert cart data into the page
+                },
+                error: function (err) {
+                    console.log("Error:", err.status);
+                    alert("Something went wrong");
+                }
+            });
+        });
+    });
+
+    // ----- Add to Cart Button AJAX with Simple Validation -----
+    $(".add-to-cart-form").on("submit", function (event) {
+        event.preventDefault(); // Prevent normal form submission
+
+        let form = $(this);
+        // Simple validation: check if productId exists
+        let productId = form.find('input[name="productId"]').val();
+        if (!productId) {
+            alert("Product ID is missing!");
+            return;
+        }
+
+        let formData = form.serialize(); // Serialize the hidden input (productId)
+
+        $.ajax({
+            url: form.attr("action"), // /api/cart/addCart
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            success: function (response) {
+                alert(response.message || "Added to cart successfully!");
+                window.location.href = '/api/cart/viewCart';
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseJSON?.message || "Failed to add to cart. Try again.");
+                console.error("Add to Cart AJAX error:", error);
+            }
+        });
+    });
+</script>
+
 
 </html>

@@ -8,6 +8,8 @@ exports.errorHandler = (error, req, res, next) => {
         message = "Validation failed";
         Object.keys(error.details).map(key => { error.details[key].map(item => data.push(item.message)) });
     }
+    console.log(data);
+    
 
     return res.status(status).json({ message, data })
 }

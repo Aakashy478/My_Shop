@@ -56,12 +56,12 @@
     <div class="container">
         <h2>Register</h2>
         <form id="registerForm" method="POST" enctype="multipart/form-data">
-            <input type="text" name="firstName" id="firstName" placeholder="First Name" required>
-            <input type="text" name="lastName" id="lastName" placeholder="Last Name" required>
-            <input type="email" name="email" id="email" placeholder="Email" required>
-            <input type="password" name="password" id="password" placeholder="Password" required>
-            <input type="file" name="profileImage" id="profileImage">
-            <select name="role" id="role" required>
+            <input type="text" name="firstName" id="firstName" placeholder="First Name">
+            <input type="text" name="lastName" id="lastName" placeholder="Last Name">
+            <input type="email" name="email" id="email" placeholder="Email">
+            <input type="password" name="password" id="password" placeholder="Password">
+            <input type="file" name="profileImage" id="profileImage" required>
+            <select name="role" id="role">
                 <option value="">Select Role</option>
                 <option value="user">User</option>
                 <option value="merchant">Merchant</option>
@@ -73,32 +73,36 @@
         </div>
     </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-            $("#registerForm").submit(function (event) {
-                event.preventDefault(); // Prevent default form submission
+        $("#registerForm").submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
 
-                let formData = new FormData(this); // Capture form data including file upload
+            // Store form values in variables using #id
+            let firstName = $("#firstName").val().trim();
+            let lastName = $("#lastName").val().trim();
+            let email = $("#email").val().trim();
+            let password = $("#password").val();
+            let role = $("#role").val().trim();
 
-  // Debugging: Check if FormData is capturing data
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
-        }                
-                $.ajax({
-                    url: "/api/user/register",
-                    type: "POST",
-                    data: formData,
-                    success: function (response) {
-                        alert(response.message || "Registration successful!");
-                        window.location.href = "/api/user/login"; // Redirect to login page
-                    },
-                    error: function (err) {
-                        console.log("error:- ",error);
-                        alert(err.responseJSON?.message || "Registration failed. Try again.");
-                    }
-                });
+            $.ajax({
+                url: "/api/user/register",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ firstName, lastName, email, password, role }),
+                dataType: "json",
+                success: function (response) {
+                    alert(response.message || "Registration successful!");
+                    window.location.href = "/api/user/login";  // Redirect to login page on success
+                },
+                error: function (err) {
+                    console.log("Error:", err);
+                    alert(err.responseJSON?.data || "Registration failed.");
+                }
             });
         });
+    });
 </script>
 
 

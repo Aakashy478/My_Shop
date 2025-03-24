@@ -54,9 +54,9 @@
 <body>
     <div class="container">
         <h2>Login</h2>
-        <form id="loginForm"> <!-- Added ID for JS -->
-            <input type="email" id="email" name="email" placeholder="Email" required>
-            <input type="password" id="password" name="password" placeholder="Password" required>
+        <form id="loginForm" method="POST" enctype="multipart/form-data">
+            <input type="email" id="email" name="email" placeholder="Email">
+            <input type="password" id="password" name="password" placeholder="Password">
             <button type="submit">Login</button>
         </form>
         <div class="links">
@@ -65,37 +65,30 @@
         </div>
     </div>
 </body>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.getElementById('loginForm').addEventListener('submit', async function (event) {
-        event.preventDefault(); // Prevent page refresh
+    $(document).ready(function () {
+        $("#loginForm").submit(function (event) {
+            event.preventDefault(); // Prevent form from submitting normally
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+            let email = $("#email").val();
+            let password = $("#password").val();
 
-        try {
-            const response = await fetch('/api/user/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'  // Send as JSON
+            $.ajax({
+                url: "/api/user/login",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ email: email, password: password }),
+                dataType: "json",
+                success: function (response) {
+                    alert(response.message || "Login successful!");
+                    window.location.href = "/home";  // Redirect on Home
                 },
-                body: JSON.stringify({ email, password })  // Convert form data to JSON
+                error: function (err) {
+                    alert(err.responseJSON?.data || "Login failed. Try again.");
+                }
             });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert(result.message || 'Login successful!');
-                window.location.href = '/home';  // Redirect to home page
-            } else {
-                alert(result.message || 'Login failed. Check your credentials.');
-                window.location.href = '/api/user/register';  
-
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Something went wrong. Please try again.');
-        }
+        });
     });
 </script>
 
