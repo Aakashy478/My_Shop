@@ -5,10 +5,10 @@ const path = require('path');
 const connectDB = require('./config/db')
 const cookieParser = require("cookie-parser");
 const methodOverride = require('method-override');
+const { swaggerSpec, swaggerUI } = require("./config/swagger"); // Adjust path if needed
 
 // Import routes
 const routes = require('./routes/index.Route');
-const { ValidationError } = require('express-validation');
 const Product = require('./models/productModel');
 const User = require('./models/userModel');
 const { errorHandler } = require('./middlewares/errorHandler');
@@ -16,6 +16,7 @@ const { errorHandler } = require('./middlewares/errorHandler');
 const app = express();
 
 // Middleware
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -41,14 +42,15 @@ app.get('/home', (req, res, next) => {
         try {
             let products = await Product.find();
             products = products.map(product => {
-                product.image = product.image.replace('public/images/', '/');
+                product.image = product.image;
                 return product;
             })
 
             let user;
             if (req.user) {
                 user = await User.findOne({ _id: req.user.id });
-                user.profileImage = user.profileImage.replace('public/images/', '/')
+                user.profileImage = user.profileImage
+
             }
             
             res.render('index', { user:user, products });

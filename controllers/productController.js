@@ -36,7 +36,7 @@ const productRegister = async (req, res) => {
         })
 
         // Save the product to the database
-        await newProduct.save();
+        await Product.create(newProduct);
 
         res.status(201).json({ message: "Product Added Successfully" });
     } catch (error) {
@@ -47,7 +47,7 @@ const productRegister = async (req, res) => {
 };
 
 // List All Products
-const listAllProducts = async (req, res) => {
+const viewProducts = async (req, res) => {
     try {
         // In case of User is delete or isDeleted: true
         const user = await User.findOne({ _id: req.user.id, isDeleted: false });
@@ -59,15 +59,15 @@ const listAllProducts = async (req, res) => {
         }
 
         // Fetch all produccts that are not deleted
-        let products = await Product.find({createdBy:user._id});
+        let products = await Product.find({ createdBy: user._id });
 
         // Products are available 
         if (products.length === 0) {
-            return res.status(404).json({ message: "No products found" });
+            return res.render('product/viewProducts', { products:[] });
         }
 
         products = products.map(product => {
-            product.image = product.image.replace('public/images/', '/');
+            product.image = product.image;
             return product;
         })
 
@@ -139,8 +139,6 @@ const editProduct = async (req, res) => {
         const id = req.params.id; // Get product ID from request parameter
         const { name, price } = req.body; // Get updated data from request body
 
-        console.log(req.file);
-        
         // Get the Product using ID
         const product = await Product.findOne({ _id: id });
 
@@ -151,7 +149,7 @@ const editProduct = async (req, res) => {
 
         // Update product name
         product.name = name || product.name;
-        
+
         // Update product price
         product.price = price || product.price;
 
@@ -168,4 +166,4 @@ const editProduct = async (req, res) => {
     }
 }
 
-module.exports = { productRegister, listAllProducts, getProduct, editProduct };
+module.exports = { productRegister, viewProducts, getProduct, editProduct };

@@ -118,24 +118,21 @@
         $("#updateProfileForm").submit(function (event) {
             event.preventDefault(); // Prevent default form submission
 
-            // Store form values in variables using #id
-            let firstName = $("#firstName").val().trim();
-            let lastName = $("#lastName").val().trim();
-            let password = $("#password").val();
+            const formData = new FormData(this); // Automatically collects all form fields, including files
 
             $.ajax({
-                url: "/api/user/updateProfile",
+                url: "/api/user/updateProfile", 
                 type: "PUT",
-                contentType: "application/json",
-                data: JSON.stringify({ firstName, lastName, password }),
-                dataType: "json",
+                data: formData,
+                processData: false,  // Prevent jQuery from processing data
+                contentType: false,  // Prevent jQuery from setting content type
                 success: function (response) {
                     alert(response.message || "Profile updated successfully!");
-                    window.location.href = "/api/user/profile";  // Redirect on success
+                    window.location.href = "/api/user/profile";
                 },
                 error: function (err) {
-                    console.log("Error:", err);
-                    alert(err.responseJSON?.data || "Failed to update profile.");
+                    console.log("Error:", err.responseJSON);
+                    alert(err.responseJSON?.data || err.responseJSON?.message || "Profile update failed.");
                 }
             });
         });

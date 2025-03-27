@@ -14,14 +14,12 @@
             color: #333;
         }
 
-        /* Navbar */
         nav {
             background-color: #1a2533;
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
         }
 
         .logo {
@@ -51,7 +49,6 @@
             color: #ff9900;
         }
 
-        /* Cart Container */
         .cart-container {
             max-width: 900px;
             margin: 50px auto;
@@ -112,7 +109,6 @@
             background-color: #cc0000;
         }
 
-        /* Checkout Button */
         .checkout {
             display: flex;
             justify-content: space-between;
@@ -139,7 +135,6 @@
             background-color: #e68a00;
         }
 
-        /* Footer */
         footer {
             text-align: center;
             padding: 30px;
@@ -151,7 +146,6 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     <nav>
         <div class="logo">My_Shop</div>
         <ul class="nav-links">
@@ -160,50 +154,93 @@
         </ul>
     </nav>
 
-    <!-- Cart Container -->
     <div class="cart-container">
         <h2 class="cart-title">Your Shopping Cart</h2>
-
         <% if (viewCart.length===0) { %>
             <p style="text-align: center; font-size: 18px;">Your cart is empty.</p>
-            <% } else { %>
-                <% let totalPrice=0; %>
-                    <% viewCart.forEach(item=> {
-                        totalPrice += item.price * item.quantity;
-                        %>
-                        <div class="cart-item">
-                            <img src="<%= item.image %>" alt="<%= item.name %>">
-                            <div class="cart-item-info">
-                                <h3>
-                                    <%= item.name %>
-                                </h3>
-                                <p>Price: ₹<%= item.price %>/-</p>
-                                <p>Quantity: <%= item.quantity %>
-                                </p>
-                            </div>
-                            <form action="/api/cart/removeCart" method="POST">
-                                <input type="hidden" name="productId" value="<%= item.id %>">
-                                <button type="submit" class="remove-btn">Remove</button>
-                            </form>
-                        </div>
-                        <% }); %>
-
-                            <!-- Checkout Section -->
-                            <div class="checkout">
-                                <p class="total-price">Total: ₹<%= totalPrice %>/-</p>
-                                <form action="/cart/checkout" method="POST">
-                                    <button type="submit" class="checkout-btn">Checkout</button>
-                                </form>
-                            </div>
-                            <% } %>
+            <% } else { let totalPrice=0; viewCart.forEach(item=> {
+                totalPrice += item.price * item.quantity;
+                %>
+                <div class="cart-item" id="cart-item-<%= item.id %>">
+                    <img src="<%= item.image %>" alt="<%= item.name %>">
+                    <div class="cart-item-info">
+                        <h3>
+                            <%= item.name %>
+                        </h3>
+                        <p>Price: ₹<%= item.price %>/-</p>
+                        <p>Quantity: <%= item.quantity %>
+                        </p>
+                        <p>Added on: <%= new Date(item.addedTime).toLocaleString() %>
+                        </p>
+                    </div>
+                    <form class="remove-cart-form" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="productId" value="<%= item.id %>">
+                        <button type="submit" class="remove-btn">Remove</button>
+                    </form>
+                </div>
+                <% }); %>
+                    <div class="checkout">
+                        <p class="total-price">Total: ₹<%= totalPrice %>/-</p>
+                        <form id="checkoutForm" action="/api/cart/checkout" method="POST">
+                            <button type="submit" class="checkout-btn">Checkout</button>
+                        </form>
+                    </div>
+                    <% } %>
     </div>
 
-    <!-- Footer -->
     <footer>
         <p>&copy;
             <script>document.write(new Date().getFullYear())</script> My_Shop. All rights reserved.
         </p>
     </footer>
 </body>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // AJAX for removing an item from the cart
+       $(document).on("submit", ".remove-cart-form", function (e) {
+            e.preventDefault();
+            const form = $(this);
+            const productId = form.find("input[name='productId']").val();
+            console.log("Product ID:", productId);
+
+            $.ajax({
+                url: '/api/cart/removeCart/' + encodeURIComponent(productId),
+                type: 'DELETE',
+                success: function (response) {
+                    alert(response.message);                    
+                    window.location.href = "/api/cart/viewCart";
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error response:", xhr.responseJSON.message);
+                    alert("Failed to remove item: " + xhr.responseText);
+                }
+            });
+        });
+
+        // Check out AJX
+        $("#checkoutForm").on("submit", function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/api/cart/checkout',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    alert("Checkout successful!");
+                    // Redirect or update UI accordingly
+                    window.location.href = "/order/confirmation"; // Change to your confirmation route
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseJSON);
+                    
+                    if(xhr.responseJSON){
+                        alert(xhr.responseJSON.data || xhr.responseJSON.message || "Checkout failed: ");
+                    }
+                    window.location.href = '/';
+                }
+            });
+        });
+    </script>
 
 </html>

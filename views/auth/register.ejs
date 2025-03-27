@@ -79,26 +79,21 @@
         $("#registerForm").submit(function (event) {
             event.preventDefault(); // Prevent default form submission
 
-            // Store form values in variables using #id
-            let firstName = $("#firstName").val().trim();
-            let lastName = $("#lastName").val().trim();
-            let email = $("#email").val().trim();
-            let password = $("#password").val();
-            let role = $("#role").val().trim();
+            const formData = new FormData(this);
 
             $.ajax({
                 url: "/api/user/register",
                 type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ firstName, lastName, email, password, role }),
-                dataType: "json",
+                data: formData,
+                processData: false,  // Prevent jQuery from converting FormData into a string
+                contentType: false,  // Prevent jQuery from setting contentType (required for FormData)
                 success: function (response) {
                     alert(response.message || "Registration successful!");
-                    window.location.href = "/api/user/login";  // Redirect to login page on success
+                    window.location.href = "/api/user/login"; // Redirect to login page on success
                 },
                 error: function (err) {
                     console.log("Error:", err);
-                    alert(err.responseJSON?.data || "Registration failed.");
+                    alert( err.responseJSON?.data || err.responseJSON?.message || "Registration failed.");
                 }
             });
         });

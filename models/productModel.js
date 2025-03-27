@@ -26,7 +26,15 @@ const ProductSchema = new mongoose.Schema(
             type: Date,
             default: null
         }
-    },{ timestamps: true }); // Enables createdAt & updatedAt auto-update
+    },{ timestamps: true }); 
 
+// Pre-save hook to modify the image path
+ProductSchema.pre("save", function (next) {
+    if (this.image) {
+        const filename = this.image.split('/').pop(); 
+        this.image = `/${filename}`; 
+    }
+    next();
+});
 
 module.exports  = mongoose.model("Product", ProductSchema);

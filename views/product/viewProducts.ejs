@@ -106,6 +106,13 @@
         .edit-btn:hover {
             background-color: #0056b3;
         }
+
+        .no-products {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -114,22 +121,27 @@
         <h2>All Products</h2>
         <div class="btn-container">
             <a href="/api/product/addProduct" class="btn add-btn">Add Product</a>
-            <a href="/home" class="btn home-btn">Home</a> <!-- New Home Button -->
+            <a href="/home" class="btn home-btn">Home</a>
         </div>
-        <div class="product-list">
-            <% products.forEach(product=> { %>
-                <div class="product">
-                    <img src="<%= product.image %>" alt="Product Image">
-                    <h3>
-                        <%= product.name %>
-                    </h3>
-                    <p>
-                        <%= product.price %>/-
-                    </p>
-                    <a href="/api/product/editProduct/<%= product.id %>" class="edit-btn">Edit</a>
+
+        <% if (products.length===0) { %>
+            <p class="no-products">No products available. 
+            <% } else { %>
+                <div class="product-list">
+                    <% products.forEach(product=> { %>
+                        <div class="product">
+                            <img src="<%= product.image %>" alt="Product Image">
+                            <h3>
+                                <%= product.name %>
+                            </h3>
+                            <p>
+                                <%= product.price %>/-
+                            </p>
+                            <a href="/api/product/editProduct/<%= product.id %>" class="edit-btn">Edit</a>
+                        </div>
+                        <% }); %>
                 </div>
-                <% }); %>
-        </div>
+                <% } %>
     </div>
 </body>
 

@@ -1,20 +1,21 @@
 const express = require('express');
-const passport = require("passport");
 const router = express.Router();
+const multer = require("multer"); // Import multer
+const upload = multer();
 
 // Medileware
-const { authorize } = require('../middlewares/authentication');
-
+const  {authorize}  = require('../middlewares/authentication');
 
 // Controller
 const cartController = require('../controllers/cartController');
 
 // Add to Cart
-router.post('/addCart', passport.authenticate("jwt", { session: false }), authorize(["user"]), cartController.addCart);
+router.post('/addCart', authorize(['user']) ,upload.none(), cartController.addCart);
 
 // View Carts
-router.get('/viewCart', passport.authenticate("jwt", { session: false }), authorize(["user"]), cartController.viewCart);
+router.get('/viewCart', authorize(["user"]), cartController.viewCart);
 
-router.post('/removeCart', passport.authenticate('jwt', { session: false }),);
+// Remove Cart
+router.delete('/removeCart/:productId', authorize(["user"]), cartController.removeCart);
 
 module.exports = router;

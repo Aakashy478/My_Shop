@@ -4,10 +4,6 @@ const ENC_SECRET_KEY = process.env.ENC_SECRET_KEY;
 const ENC_IV = process.env.ENC_IV;
 const ALGORITHM = process.env.ALGORITHM;
 
-// console.log("Encryption Key:", ENC_SECRET_KEY);
-// console.log("IV:", ENC_IV);
-// console.log("Algorithm:", ALGORITHM);
-
 function encrypt(text) {
     const iv = Buffer.from(ENC_IV, "hex");
     const key = Buffer.from(ENC_SECRET_KEY, "hex");

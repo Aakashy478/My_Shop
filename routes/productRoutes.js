@@ -7,37 +7,24 @@ const router = express.Router();
 // Middleware Imports
 const { upload } = require('../middlewares/uploadImage');
 const { validate } = require('express-validation');
-const { productRegister } = require('../validations/products');
-const { authorize } = require('../middlewares/authentication');
+const  {authorize}  = require('../middlewares/authentication');
+const { productRegister } = require('../validations/Product/productRegister');
+const { productEdit } = require('../validations/Product/productEdit');
 
 // Controller Imports
 const productController = require('../controllers/productController');
 
-// ------------------- GET Routes -------------------
-
-// Render Product Management Page (Authenticated Users)
-router.get(
-    '/productMenagement',
-    passport.authenticate("jwt", { session: false }),
-    authorize(["merchant"]),
-    async (req, res) => {
-        try {
-            res.render('product/productMenagement');
-        } catch (error) {
-            console.log("Error in productMenagement",error);
-            res.status(500).json({ message: "Something went wrong. Please try again later." });
-        }
-    }
-);
-
+//=========================== GET Routes =================================
 
 // Render Add Product Page (Only Merchants)
 router.get(
-    '/addProduct',
-    passport.authenticate("jwt", { session: false }),
-    authorize(['merchant']),
-    (req, res) => {
-        res.render('product/addProduct');
+    '/addProduct', authorize(['merchant']), (req, res) => {
+        try {
+            res.render('product/addProduct');
+        } catch (error) {
+            console.error("Error fetching product:", error.message);
+            res.status(500).send("Something went wrong");
+        }
     }
 );
 
@@ -60,25 +47,15 @@ router.get('/editProduct/:id', async (req, res) => {
 // ------------------- POST Routes -------------------
 
 // Register a New Product (Only Merchants)
-router.post(
-    '/addProduct',
-    upload.single('image'),
-    passport.authenticate("jwt", { session: false }),
-    validate(productRegister),
-    productController.productRegister
-);
+router.post('/addProduct', upload.single('image'), authorize(["merchant"]), validate(productRegister), productController.productRegister);
 
 // List All Products (Authenticated Users)
-router.get(
-    '/viewProducts',
-    passport.authenticate("jwt", { session: false }),authorize(["merchant"]),
-    productController.listAllProducts
-);
+router.get('/viewProducts', authorize(["merchant"]), productController.viewProducts);
 
 // Get Product by ID
-router.get('/:id', productController.getProduct);
+router.get('/:id', authorize(["merchant"]) ,productController.getProduct);
 
 // Update Product Details
-router.post('/editProduct/:id', upload.single("image"), productController.editProduct);
+router.post('/editProduct/:id', upload.single("image"), authorize(["merchant"]) ,validate(productEdit), productController.editProduct);
 
 module.exports = router;

@@ -8,9 +8,10 @@ const resetPasswordValidate = {
             "any.required": "Email is required"
         }),
 
-        otp: Joi.string().trim().length(4).required().messages({
-            "string.empty": "OTP cannot be empty",
-            "string.length": "OTP must be 4 digits",
+        otp: Joi.number().integer().min(1000).max(9999).required().messages({
+            "number.base": "OTP must be a number",
+            "number.min": "OTP must be a 4-digit number",
+            "number.max": "OTP must be a 4-digit number",
             "any.required": "OTP is required"
         }),
 

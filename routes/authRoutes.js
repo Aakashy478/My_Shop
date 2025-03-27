@@ -1,10 +1,10 @@
 const express = require('express');
-const passport = require("passport");
 const router = express.Router();
+const User = require('../models/userModel');
 
 // Middlewares
 const { upload } = require('../middlewares/uploadImage');
-const { authorize } = require('../middlewares/authentication');
+const  {authorize}  = require('../middlewares/authentication');
 const { validate } = require('express-validation');
 
 // Controllers
@@ -15,7 +15,6 @@ const authValidation = require('../validations/auth/registerValidate');
 const loginValidate = require('../validations/auth/loginValidate');
 const updateProfileValidate = require('../validations/auth/updateProfileValidate');
 const forgotPasswordValidate = require('../validations/auth/forgotPassword');
-const User = require('../models/userModel');
 const resetPasswordValidate = require('../validations/auth/resetPassword');
 
 // ===================== GET Methods =====================
@@ -31,9 +30,10 @@ router.get('/login', (req, res) => {
 });
 
 // Render Update Profile Page (Protected)
-router.get('/updateProfile', passport.authenticate("jwt", { session: false }), async (req, res) => {
+router.get('/updateProfile', authorize([]), async (req, res) => {
     let user = await User.findById(req.user.id);
-    user.profileImage = user.profileImage.replace('public/images', '/');
+    user.profileImage = user.profileImage.replace('public/images/', '/');
+    
     res.render('auth/update', { user });
 });
 
@@ -50,19 +50,16 @@ router.get('/resetPassword', (req, res) => {
 // ===================== POST Methods =====================
 
 // Register New User
-router.post('/register', validate(authValidation), upload.single('profileImage'),  authController.authRegister);
+router.post('/register', upload.single('profileImage'), validate(authValidation),  authController.authRegister);
 
 // Login User
 router.post('/login', validate(loginValidate), authController.authLogin);
 
 // Get User Profile (Protected)
-router.get('/profile', passport.authenticate("jwt", { session: false }), authController.authProfile);
+router.get('/profile', authorize([]), authController.authProfile);
 
 // Update Profile (Protected)
-router.put('/updateProfile', passport.authenticate("jwt", { session: false }), validate(updateProfileValidate), upload.single("profileImage"), authController.updateProfile);
-
-// Delete User Account
-router.delete('/deleteAuth', authController.isDeleted);
+router.put('/updateProfile', authorize([]), upload.single("profileImage"), validate(updateProfileValidate),  authController.updateProfile);
 
 // Forgot Password
 router.post('/forgotPassword',validate(forgotPasswordValidate), authController.forgot_password);

@@ -10,8 +10,6 @@ const authRegister = async (req, res, next) => {
         // Extract data user data from req body
         const { firstName, lastName, email, password, role } = req.body;
 
-        console.log("inside Register");
-        
         let profileImage = req.file ? req.file.path : '';
 
         // check if the user already exists 
@@ -32,8 +30,7 @@ const authRegister = async (req, res, next) => {
             isDeleted: false,
             deletedAt: null
         })
-        await newUser.save();
-        console.log("User Register successfully");
+        await User.create(newUser);
 
         res.status(201).json({ message: "Register Successfully" });
     } catch (error) {
@@ -45,7 +42,6 @@ const authRegister = async (req, res, next) => {
 const authLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(email,password);
 
         // check user exists
         const user = await User.findOne({ email: encrypt(email), isDeleted: false });
@@ -63,7 +59,7 @@ const authLogin = async (req, res) => {
         }
 
         // Generate token
-        const token = generateToken(user, res);
+        generateToken(user, res);
         req.user = user;
 
         res.status(201).json({ message: "Login Successfully!" });
@@ -91,7 +87,8 @@ const authProfile = async (req, res) => {
 
         // Prepare user profile data
         const profile = {
-            profileImage: userProfile.profileImage.replace('public/images/', '/'),
+            // profileImage: userProfile.profileImage.replace('public/images/', '/'),
+            profileImage: userProfile.profileImage,
             firstName: userProfile.firstName,
             lastName: userProfile.lastName,
             email: decrypt(userProfile.email), // Decrypt email if necessary
@@ -198,33 +195,6 @@ const reset_password = async (req, res) => {
     }
 }
 
-const isDeleted = async (req, res) => {
-    try {
-        // Get User id
-        const userId = req.user.id;
-
-        // Get User using userId and isDeleted: false
-        const user = await User.findOne({ _id: userId, isDeleted: false });
-        // console.log(user);
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // Delete User using isDelete property 
-        user.isDeleted = true;
-
-        await user.save();
-        res.status(201).json({
-            message: "User deleted successfully",
-            user
-        });
-    } catch (error) {
-        console.log("Error in Delete Auth :- ", error.massage);
-        res.status(500).json({ message: "Something went wrong. Please try again later" })
-    }
-}
-
 // Logout
 const logout = async (req, res) => {
     try {
@@ -240,4 +210,4 @@ const logout = async (req, res) => {
 };
 
 
-module.exports = { authRegister, authLogin, authProfile, updateProfile, forgot_password, reset_password, isDeleted, logout };
+module.exports = { authRegister, authLogin, authProfile, updateProfile, forgot_password, reset_password, logout };

@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profileImage: { type: String, default: '' }, // URL or file path
+    profileImage: { type: String, default: '' }, 
     role: { type: String, required: true },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },
@@ -25,6 +25,11 @@ userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
         this.password = await hashPassword(this.password);
     }
+
+    if (this.profileImage) {
+    const filename = this.profileImage.split('/').pop(); 
+    this.profileImage = `/${filename}`;
+  }
 
     next();
 });
