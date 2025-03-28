@@ -62,6 +62,7 @@
     <div class="container">
         <h2>Edit Product</h2>
         <form id="editProductForm">
+            <input type="hidden" name="productId" id="productId" value="<%= product._id %>">
             <input type="text" name="name" id="name" value="<%= product.name %>" required>
             <input type="number" name="price" id="price" value="<%= product.price %>" required>
             <input type="file" name="image" id="image">
@@ -69,30 +70,29 @@
         </form>
     </div>
 </body>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
         $("#editProductForm").on("submit", function (e) {
             e.preventDefault(); // Prevent default form submission
 
+            let productId = $("#productId").val();
             let formData = new FormData(this); // Create FormData object
+
             $.ajax({
-                url: "/api/product/editProduct/<%= product._id %>",
-                type: "POST",
+                url: `/api/product/editProduct/${productId}`, // Using PUT method
+                type: "PUT",
                 data: formData,
                 contentType: false, // Necessary for file upload
                 processData: false, // Prevent jQuery from processing data
                 success: function (response) {
-                    // console.log(response);
-                    
                     alert("Product updated successfully!");
                     window.location.href = "/api/product/viewProducts"; // Redirect or update UI
                 },
                 error: function (xhr, status, error) {
-                    console.log(xhr.responseJSON.data);
-                    
-                    alert(xhr.responseJSON.data || xhr.responseJSON.message || "Somthing went wrong");
-                }   
+                    alert(xhr.responseJSON?.data||xhr.responseJSON?.message || "Something went wrong");
+                }
             });
         });
     });

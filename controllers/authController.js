@@ -154,8 +154,6 @@ const forgot_password = async (req, res) => {
         user.otp = otp;
         await user.save();
 
-        console.log('Saved OTP:- ', user.otp);
-
         res.status(201).json({
             message: "OTP sent successfully! " + "\n\n" + "OTP : " + otp
         })
@@ -186,7 +184,6 @@ const reset_password = async (req, res) => {
         user.password = newPassword;
         user.otp = null; // Clear OTP after use
         await user.save();
-        console.log("Reset password successfully");
 
         res.status(201).json({ message: "Reset Password successfull!" });
     } catch (error) {

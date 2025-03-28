@@ -1,7 +1,11 @@
-const { Joi } = require('express-validation');
+const { Joi } = require("express-validation");
 
 exports.productEdit = {
     body: Joi.object({
+        productId: Joi.string().trim().required().messages({
+            "string.empty": "Product ID cannot be empty",
+            "any.required": "Product ID is required"
+        }),
         name: Joi.string().trim().optional().allow("").messages({
             "string.empty": "Name cannot be empty"
         }),
