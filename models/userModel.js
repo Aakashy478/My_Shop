@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
 
     // Add OTP fields
     otp: { type: String, default: null }
-}, { timestamps: true }); // ✅ Enables createdAt & updatedAt auto-update
+}, { timestamps: true });
 
 // Pre -save hook:  Encrypt the email and hash the password before save the database
 userSchema.pre('save', async function (next) {
@@ -27,8 +27,13 @@ userSchema.pre('save', async function (next) {
     }
 
     if (this.profileImage) {
-    const filename = this.profileImage.split('/').pop(); 
-    this.profileImage = `/${filename}`;
+        console.log(this.profileImage);
+        
+        const filename = this.profileImage.split('images').pop(); 
+        console.log(filename);
+        
+        this.profileImage = `${filename}`;
+        console.log(this.profileImage);
   }
 
     next();

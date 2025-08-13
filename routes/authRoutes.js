@@ -47,6 +47,12 @@ router.get('/resetPassword', (req, res) => {
     res.render('auth/resetPassword');
 });
 
+router.get('/payment', (req, res) => {
+    const product = { name: "Smartphone", price: 14999 };
+    res.render('payment', { product });
+});
+
+
 // ===================== POST Methods =====================
 
 // Register New User

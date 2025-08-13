@@ -29,11 +29,11 @@ const options = {
                 Register: {
                     type: "object",
                     properties: {
-                        firstName: { type: "string" },
-                        lastName: { type: "string" },
-                        email: { type: "string", format: "email" },
-                        password: { type: "string" },
-                        role: { type: "string", enum: ["user", "merchant"] }
+                        firstName: { type: "string" ,example:'Ram'},
+                        lastName: { type: "string",example:'Ganwani' },
+                        email: { type: "string", format: "email" ,example:'ram@gmail.com'},
+                        password: { type: "string" ,example:"Ram@1234"},
+                        role: { type: "string", enum: ["user", "merchant"] ,example:'user'}
                     },
                     required: ["firstName", "lastName", "email", "password"],
                 },

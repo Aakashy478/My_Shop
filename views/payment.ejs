@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - My Shop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .order-summary {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .order-details {
+            flex: 1;
+            padding-right: 15px;
+        }
+
+        .order-summary p {
+            font-size: 16px;
+            color: #444;
+            margin: 5px 0;
+        }
+
+        .barcode {
+            flex-shrink: 0;
+            background: white;
+            padding: 8px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .barcode img {
+            width: 120px;
+            height: 50px;
+        }
+
+        .payment-method {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .payment-method label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+        }
+
+        .payment-method label:hover {
+            transform: scale(1.03);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #ff7e00, #ff9900);
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s ease-in-out, transform 0.2s;
+        }
+
+        .pay-btn:hover {
+            background: linear-gradient(45deg, #e86a00, #e68a00);
+            transform: scale(1.03);
+        }
+
+        .payment-icons {
+            width: 25px;
+            height: 25px;
+            margin-right: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .order-summary {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+
+            .order-details {
+                padding-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .barcode img {
+                width: 100px;
+                height: 40px;
+            }
+
+            .payment-method label {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .pay-btn {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Secure Payment</h2>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="order-details">
+                <p><strong>Product:</strong>
+                    <%= product.name %>
+                </p>
+                <p><strong>Price:</strong> ₹<%= product.price %>
+                </p>
+                <p><strong>Delivery:</strong> Free</p>
+                <p><strong>Total Amount:</strong> ₹<%= product.price %>
+                </p>
+            </div>
+
+            <!-- Barcode -->
+            <div class="barcode">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x50&data=MyShop-Payment" alt="Barcode">
+            </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <form action="/process-payment" method="POST">
+            <div class="payment-method">
+                <label>
+                    <img src="https://img.icons8.com/ios-filled/50/000000/bank-cards.png" class="payment-icons">
+                    <input type="radio" name="payment" value="credit-debit" required> Credit / Debit Card
+                </label>
+                <label>
+                    <img src="https://img.icons8.com/ios-filled/50/000000/qr-code.png" class="payment-icons">
+                    <input type="radio" name="payment" value="upi"> UPI (Google Pay, PhonePe, Paytm)
+                </label>
+                <label>
+                    <img src="https://img.icons8.com/ios-filled/50/000000/bank.png" class="payment-icons">
+                    <input type="radio" name="payment" value="netbanking"> Net Banking
+                </label>
+                <label>
+                    <img src="https://img.icons8.com/ios-filled/50/000000/cash.png" class="payment-icons">
+                    <input type="radio" name="payment" value="cod"> Cash on Delivery
+                </label>
+            </div>
+
+            <button type="submit" class="pay-btn">Proceed to Pay</button>
+        </form>
+    </div>
+
+</body>
+
+</html>

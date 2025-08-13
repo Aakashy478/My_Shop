@@ -31,8 +31,8 @@ const ProductSchema = new mongoose.Schema(
 // Pre-save hook to modify the image path
 ProductSchema.pre("save", function (next) {
     if (this.image) {
-        const filename = this.image.split('/').pop(); 
-        this.image = `/${filename}`; 
+        const filename = this.image.split('images').pop(); 
+        this.image = `${filename}`; 
     }
     next();
 });
