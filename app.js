@@ -5,7 +5,7 @@ const path = require('path');
 const connectDB = require('./config/db')
 const cookieParser = require("cookie-parser");
 const methodOverride = require('method-override');
-const { swaggerSpec, swaggerUI } = require("./config/swagger"); // Adjust path if needed
+const { swaggerSpec, swaggerUI } = require("./swagger"); // Adjust path if needed
 
 // Import routes
 const routes = require('./routes/index.Route');

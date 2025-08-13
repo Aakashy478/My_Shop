@@ -63,7 +63,7 @@ const viewProducts = async (req, res) => {
 
         // Products are available 
         if (products.length === 0) {
-            return res.render('product/viewProducts', { products:[] });
+            return res.render('product/viewProducts', { products: [] });
         }
 
         products = products.map(product => {
@@ -136,11 +136,13 @@ const getProduct = async (req, res) => {
 // Update Product
 const editProduct = async (req, res) => {
     try {
-        const id = req.params.id; // Get product ID from request parameter
+        const productId = req.params.productId; // Get product ID from request parameter
         const { name, price } = req.body; // Get updated data from request body
 
         // Get the Product using ID
-        const product = await Product.findOne({ _id: id });
+        const product = await Product.findOne({ _id: productId });
+        console.log(product);
+        
 
         // Check product is exist
         if (!product) {
@@ -159,11 +161,33 @@ const editProduct = async (req, res) => {
         // Save the updated product
         await product.save();
 
-        res.redirect('/api/product/viewProducts');
+        res.status(200).json({message:"Product updated successfully"})
     } catch (error) {
         console.log("Error in updating product:- ", error.message);
         res.status(500).json({ message: "Something went wrong. Please try again later" })
     }
 }
 
-module.exports = { productRegister, viewProducts, getProduct, editProduct };
+// pending
+const deleteProduct = async (req, res) => {
+    try {
+        console.log("Inside delete");
+        // const {id} = req.body;
+        // // const { id } = req.params;
+
+
+        // // Find the product by ID and delete it
+        // const deletedProduct = await Product.findByIdAndDelete(id);
+
+        // if (!deletedProduct) {
+        //     return res.status(404).json({ message: "Product not found" });
+        // }
+
+        res.json({ message: "Product deleted successfully!" });
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+module.exports = { productRegister, viewProducts, getProduct, editProduct, deleteProduct };

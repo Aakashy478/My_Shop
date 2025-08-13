@@ -4,11 +4,13 @@ const moment = require('moment');
 
 const addCart = async (req, res) => {
     try {
+        
         const productId = req.body.productId;
         const userId = req.user.id;
 
         // Check if product exists
         const product = await Product.findOne({ _id: productId });
+        
 
         if (!product) {
             return res.status(404).json({ message: "Product not found" });

@@ -56,6 +56,8 @@ router.get('/viewProducts', authorize(["merchant"]), productController.viewProdu
 router.get('/:id', authorize(["merchant"]) ,productController.getProduct);
 
 // Update Product Details
-router.post('/editProduct/:id', upload.single("image"), authorize(["merchant"]) ,validate(productEdit), productController.editProduct);
+router.put('/editProduct/:productId', upload.single("image"), authorize(["merchant"]), validate(productEdit), productController.editProduct);
+
+router.delete('/deleteProduct/:productId', authorize(['merchant'], productController.deleteProduct));
 
 module.exports = router;
