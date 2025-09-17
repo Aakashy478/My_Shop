@@ -69,7 +69,9 @@ const viewProducts = async (req, res) => {
         products = products.map(product => {
             product.image = product.image;
             return product;
-        })
+        });
+
+        console.log("product :-", products)
 
         res.render('product/viewProducts', { products });
     } catch (error) {
@@ -142,7 +144,7 @@ const editProduct = async (req, res) => {
         // Get the Product using ID
         const product = await Product.findOne({ _id: productId });
         console.log(product);
-        
+
 
         // Check product is exist
         if (!product) {
@@ -161,7 +163,7 @@ const editProduct = async (req, res) => {
         // Save the updated product
         await product.save();
 
-        res.status(200).json({message:"Product updated successfully"})
+        res.status(200).json({ message: "Product updated successfully" })
     } catch (error) {
         console.log("Error in updating product:- ", error.message);
         res.status(500).json({ message: "Something went wrong. Please try again later" })

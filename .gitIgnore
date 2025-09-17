@@ -1,0 +1,8 @@
+# Ignore the build directory
+/build/
+
+# Ignore other common files and directories
+node_modules/
+*.log
+*.env
+*.DS_Store

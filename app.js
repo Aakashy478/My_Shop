@@ -1,19 +1,43 @@
-require('dotenv').config(); // Load enviroment variables
+require('dotenv').config();
 const express = require('express');
-const passport = require('passport')
+const passport = require('passport');
 const path = require('path');
-const connectDB = require('./config/db')
+const connectDB = require('./config/db');
 const cookieParser = require("cookie-parser");
 const methodOverride = require('method-override');
-const { swaggerSpec, swaggerUI } = require("./swagger"); // Adjust path if needed
+const { swaggerSpec, swaggerUI } = require("./swagger");
+const morgan = require("morgan");
+const cors = require("cors");
 
-// Import routes
+const fs = require("fs");
+
 const routes = require('./routes/index.Route');
 const Product = require('./models/productModel');
 const User = require('./models/userModel');
 const { errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
+
+// ================== Logging Setup ==================
+const logDirectory = path.join(process.cwd(), "logs");
+if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory);
+}
+
+// Create a write stream for access logs
+const accessLogStream = fs.createWriteStream(path.join(logDirectory, "app.log"), { flags: "a" });
+
+// Log detailed info into file
+app.use(morgan("combined", { stream: accessLogStream }));
+
+// Log short colored output into console
+app.use(morgan("dev"));
+// ===================================================
+
+
+// Static files
+app.use(cors({ origin: "*" }));
+app.use(express.static(path.join(process.cwd(), 'public/images')));
 
 // Middleware
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -44,7 +68,8 @@ app.get('/home', (req, res, next) => {
             products = products.map(product => {
                 product.image = product.image;
                 return product;
-            })
+            });
+
 
             let user;
             if (req.user) {
@@ -52,8 +77,8 @@ app.get('/home', (req, res, next) => {
                 user.profileImage = user.profileImage
 
             }
-            
-            res.render('index', { user:user, products });
+
+            res.render('index', { user: user, products });
         } catch (error) {
             console.error("Error loading home page:", error.message);
             res.status(500).send("Something went wrong");
@@ -71,7 +96,7 @@ app.use((req, res, next) => {
 // Handle validation Error
 app.use(errorHandler);
 
-const port = process.env.PORT || 8081;
+const port = process.env.PORT || 4000;
 app.listen(port, () => {
     console.log(`server listen on http://localhost:${port}`);
 });

@@ -1,0 +1,33 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: my_mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - my_shop_network
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build: .
+    image: my_shop-app:latest
+    container_name: my_shop_container
+    ports:
+      - "4000:8000"
+    depends_on:
+      - mongo
+    networks:
+      - my_shop_network
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://my_mongo:27017/Demo_shop
+    volumes:
+      - ./public/images:/opt/app/public/images   # <--- mount public/images folder
+
+networks:
+  my_shop_network:
+    driver: bridge
+
+volumes:
+  mongo_data:

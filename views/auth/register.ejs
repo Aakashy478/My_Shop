@@ -3,7 +3,7 @@
 
 <head>
     <title>Register</title>
-    <link rel="stylesheet" href="/styles.css">
+    <!-- <link rel="stylesheet" href="/styles.css"> -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -93,7 +93,7 @@
                 },
                 error: function (err) {
                     console.log("Error:", err);
-                    alert( err.responseJSON?.data || err.responseJSON?.message || "Registration failed.");
+                    alert(err.responseJSON?.data || err.responseJSON?.message || "Registration failed.");
                 }
             });
         });

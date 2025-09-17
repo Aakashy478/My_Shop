@@ -259,6 +259,14 @@ module.exports = require("mongoose");
 
 /***/ }),
 
+/***/ 96:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("morgan");
+
+/***/ }),
+
 /***/ 160:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
@@ -589,7 +597,9 @@ const viewProducts = async (req, res) => {
         products = products.map(product => {
             product.image = product.image;
             return product;
-        })
+        });
+
+        console.log("product :-", products)
 
         res.render('product/viewProducts', { products });
     } catch (error) {
@@ -662,7 +672,7 @@ const editProduct = async (req, res) => {
         // Get the Product using ID
         const product = await Product.findOne({ _id: productId });
         console.log(product);
-        
+
 
         // Check product is exist
         if (!product) {
@@ -681,7 +691,7 @@ const editProduct = async (req, res) => {
         // Save the updated product
         await product.save();
 
-        res.status(200).json({message:"Product updated successfully"})
+        res.status(200).json({ message: "Product updated successfully" })
     } catch (error) {
         console.log("Error in updating product:- ", error.message);
         res.status(500).json({ message: "Something went wrong. Please try again later" })
@@ -1103,17 +1113,23 @@ module.exports = require("bcrypt");
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 const { ValidationError } = __webpack_require__(572);
+
 exports.errorHandler = (error, req, res, next) => {
-    let status = 500;
-    let message = "Something went wrong! Please try again later";
+    let status = error.status || 500;
+    let message = error.message || "Something went wrong! Please try again later";
     let data = [];
+
     if (error instanceof ValidationError) {
+        status = 400; // bad request
         message = "Validation failed";
-        Object.keys(error.details).map(key => { error.details[key].map(item => data.push(item.message)) });
+        Object.keys(error.details).forEach(key => {
+            error.details[key].forEach(item => data.push(item.message));
+        });
     }
 
-    return res.status(status).json({ message, data })
-}
+    return res.status(status).json({ message, data });
+};
+
 
 /***/ }),
 
@@ -1122,6 +1138,14 @@ exports.errorHandler = (error, req, res, next) => {
 
 "use strict";
 module.exports = require("express-validation");
+
+/***/ }),
+
+/***/ 577:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("cors");
 
 /***/ }),
 
@@ -1532,6 +1556,14 @@ module.exports = router;
 
 /***/ }),
 
+/***/ 896:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+
 /***/ 898:
 /***/ ((module) => {
 
@@ -1673,22 +1705,46 @@ module.exports = authValidate;
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-(__webpack_require__(818).config)(); // Load enviroment variables
+(__webpack_require__(818).config)();
 const express = __webpack_require__(252);
-const passport = __webpack_require__(278)
+const passport = __webpack_require__(278);
 const path = __webpack_require__(928);
-const connectDB = __webpack_require__(391)
+const connectDB = __webpack_require__(391);
 const cookieParser = __webpack_require__(898);
 const methodOverride = __webpack_require__(692);
-const { swaggerSpec, swaggerUI } = __webpack_require__(414); // Adjust path if needed
+const { swaggerSpec, swaggerUI } = __webpack_require__(414);
+const morgan = __webpack_require__(96);
+const cors = __webpack_require__(577);
 
-// Import routes
+const fs = __webpack_require__(896);
+
 const routes = __webpack_require__(894);
 const Product = __webpack_require__(937);
 const User = __webpack_require__(709);
 const { errorHandler } = __webpack_require__(500);
 
 const app = express();
+
+// ================== Logging Setup ==================
+const logDirectory = path.join(process.cwd(), "logs");
+if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory);
+}
+
+// Create a write stream for access logs
+const accessLogStream = fs.createWriteStream(path.join(logDirectory, "app.log"), { flags: "a" });
+
+// Log detailed info into file
+app.use(morgan("combined", { stream: accessLogStream }));
+
+// Log short colored output into console
+app.use(morgan("dev"));
+// ===================================================
+
+
+// Static files
+app.use(cors({ origin: "*" }));
+app.use(express.static(path.join(process.cwd(), 'public/images')));
 
 // Middleware
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
@@ -1719,7 +1775,8 @@ app.get('/home', (req, res, next) => {
             products = products.map(product => {
                 product.image = product.image;
                 return product;
-            })
+            });
+
 
             let user;
             if (req.user) {
@@ -1727,8 +1784,8 @@ app.get('/home', (req, res, next) => {
                 user.profileImage = user.profileImage
 
             }
-            
-            res.render('index', { user:user, products });
+
+            res.render('index', { user: user, products });
         } catch (error) {
             console.error("Error loading home page:", error.message);
             res.status(500).send("Something went wrong");
@@ -1746,7 +1803,7 @@ app.use((req, res, next) => {
 // Handle validation Error
 app.use(errorHandler);
 
-const port = process.env.PORT || 8081;
+const port = process.env.PORT || 4000;
 app.listen(port, () => {
     console.log(`server listen on http://localhost:${port}`);
 });
